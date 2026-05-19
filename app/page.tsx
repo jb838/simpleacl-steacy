@@ -68,6 +68,8 @@ const plans = [
 ];
 
 export default function Home() {
+  const [estimatedCallVolume, setEstimatedCallVolume] = useState("");
+
   const [form, setForm] = useState({
     name: "",
     company: "",
@@ -75,17 +77,13 @@ export default function Home() {
     email: "",
     sector: "",
     problem: "",
-    inboundHours: "",
-    outboundHours: "",
   });
 
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
 
-  const inboundHours = Number(form.inboundHours) || 0;
-  const outboundHours = Number(form.outboundHours) || 0;
-  const totalCallHours = inboundHours + outboundHours;
+  const totalCallHours = Number(estimatedCallVolume) || 0;
   const estimatedAiCost = totalCallHours * AI_HOURLY_RATE;
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -114,8 +112,8 @@ export default function Home() {
         email: form.email,
         sector: form.sector,
         problem: form.problem,
-        inbound_hours: inboundHours,
-        outbound_hours: outboundHours,
+        inbound_hours: null,
+        outbound_hours: null,
         estimated_total_hours: totalCallHours,
         estimated_ai_cost: estimatedAiCost,
         status: "new",
@@ -138,8 +136,6 @@ export default function Home() {
       email: "",
       sector: "",
       problem: "",
-      inboundHours: "",
-      outboundHours: "",
     });
   }
 
@@ -414,6 +410,53 @@ export default function Home() {
         </div>
       </section>
 
+      <section className="mx-auto max-w-4xl px-6 py-16">
+        <div className="rounded-3xl border border-white/10 bg-white/5 p-8 text-center md:p-12">
+          <p className="text-sm uppercase tracking-[0.3em] text-white/40">
+            Simulateur IA
+          </p>
+
+          <h2 className="mt-4 text-3xl font-bold md:text-5xl">
+            Estimez votre consommation IA
+          </h2>
+
+          <p className="mx-auto mt-4 max-w-2xl text-white/60">
+            Indiquez le cumul mensuel estimé de vos appels entrants et sortants.
+            Le surcoût IA est calculé sur une base de {AI_HOURLY_RATE}€/h.
+          </p>
+
+          <div className="mx-auto mt-8 max-w-md">
+            <label
+              htmlFor="estimated-call-volume"
+              className="mb-3 block text-sm text-white/60"
+            >
+              Cumul estimé de votre volume appels entrants & sortants actuels ?
+            </label>
+
+            <input
+              id="estimated-call-volume"
+              type="number"
+              min="0"
+              step="0.5"
+              placeholder="Exemple : 12"
+              value={estimatedCallVolume}
+              onChange={(e) => setEstimatedCallVolume(e.target.value)}
+              className="w-full rounded-xl border border-white/10 bg-black px-5 py-4 text-center text-white outline-none"
+            />
+          </div>
+
+          <div className="mx-auto mt-8 max-w-md rounded-2xl border border-white/10 bg-black p-6">
+            <p className="text-sm text-white/50">Surcoût IA estimé</p>
+
+            <p className="mt-2 text-4xl font-bold">{estimatedAiCost}€/mois</p>
+
+            <p className="mt-2 text-sm text-white/40">
+              {totalCallHours}h × {AI_HOURLY_RATE}€/h
+            </p>
+          </div>
+        </div>
+      </section>
+
       <section className="mx-auto max-w-7xl px-6 py-24">
         <div className="text-center">
           <h2 className="text-4xl font-bold">Installation en 72h</h2>
@@ -437,28 +480,38 @@ export default function Home() {
 
                 <p className="mt-4 text-4xl font-bold">{plan.price}</p>
 
-                <div className="mt-5 rounded-2xl border border-white/10 bg-black p-4">
-                  <p className="text-sm text-white/50">
-                    Surcoût IA estimé
-                  </p>
+                {plan.basePrice !== null ? (
+                  <div className="mt-5 rounded-2xl border border-white/10 bg-black p-4">
+                    <p className="text-sm text-white/50">
+                      Surcoût IA estimé
+                    </p>
 
-                  <p className="mt-2 text-2xl font-bold">
-                    + {estimatedAiCost}€/mois
-                  </p>
+                    <p className="mt-2 text-2xl font-bold">
+                      + {estimatedAiCost}€/mois
+                    </p>
 
-                  <p className="mt-1 text-xs text-white/40">
-                    {totalCallHours}h estimées × {AI_HOURLY_RATE}€/h.
-                  </p>
+                    <p className="mt-1 text-xs text-white/40">
+                      {totalCallHours}h estimées × {AI_HOURLY_RATE}€/h.
+                    </p>
 
-                  {totalEstimated !== null && (
                     <p className="mt-3 text-sm text-white/70">
                       Total estimé :{" "}
                       <span className="font-semibold text-white">
                         {totalEstimated}€/mois
                       </span>
                     </p>
-                  )}
-                </div>
+                  </div>
+                ) : (
+                  <div className="mt-5 rounded-2xl border border-white/10 bg-black p-4">
+                    <p className="text-sm text-white/50">Consommation IA</p>
+
+                    <p className="mt-2 text-xl font-bold">Sur devis</p>
+
+                    <p className="mt-1 text-xs text-white/40">
+                      Adaptée aux volumes, sites, équipes et scénarios métier.
+                    </p>
+                  </div>
+                )}
 
                 <ul className="mt-8 space-y-4">
                   {plan.features.map((feature) => (
@@ -491,9 +544,9 @@ export default function Home() {
           </h2>
 
           <p className="mx-auto mt-6 max-w-2xl text-center text-lg text-white/60">
-            Décrivez votre activité et estimez votre volume d’appels. Nous vous
-            montrons concrètement comment Stecy pourrait répondre, qualifier et
-            relancer vos prospects à votre place.
+            Décrivez votre activité. Nous vous montrons concrètement comment
+            Stecy pourrait répondre, qualifier et relancer vos prospects à votre
+            place.
           </p>
 
           <div className="mt-8 rounded-2xl border border-white/10 bg-black p-5 text-center">
@@ -547,44 +600,6 @@ export default function Home() {
               onChange={(e) => setForm({ ...form, sector: e.target.value })}
               className="rounded-xl border border-white/10 bg-black px-5 py-4 text-white outline-none"
             />
-
-            <div className="grid gap-4 md:grid-cols-2">
-              <input
-                type="number"
-                min="0"
-                step="0.5"
-                placeholder="Heures d’appels entrants / mois"
-                value={form.inboundHours}
-                onChange={(e) =>
-                  setForm({ ...form, inboundHours: e.target.value })
-                }
-                className="rounded-xl border border-white/10 bg-black px-5 py-4 text-white outline-none"
-              />
-
-              <input
-                type="number"
-                min="0"
-                step="0.5"
-                placeholder="Heures d’appels sortants / mois"
-                value={form.outboundHours}
-                onChange={(e) =>
-                  setForm({ ...form, outboundHours: e.target.value })
-                }
-                className="rounded-xl border border-white/10 bg-black px-5 py-4 text-white outline-none"
-              />
-            </div>
-
-            <div className="rounded-2xl border border-white/10 bg-black p-5 text-center">
-              <p className="text-sm text-white/50">
-                Estimation du surcoût IA refacturé
-              </p>
-              <p className="mt-2 text-3xl font-bold text-white">
-                {estimatedAiCost}€/mois
-              </p>
-              <p className="mt-2 text-sm text-white/40">
-                {totalCallHours}h estimées × {AI_HOURLY_RATE}€/h
-              </p>
-            </div>
 
             <textarea
               placeholder="Quel est votre principal problème aujourd’hui ?"
