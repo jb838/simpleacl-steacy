@@ -14,6 +14,7 @@ import {
 
 const PHONE_DISPLAY = "01 85 52 00 84";
 const PHONE_LINK = "tel:+33185520084";
+const AI_HOURLY_RATE = 10;
 
 const features = [
   {
@@ -49,16 +50,19 @@ const plans = [
   {
     name: "Starter",
     price: "97€/mois",
+    basePrice: 97,
     features: ["Démo vocale", "Capture prospects", "Notifications email"],
   },
   {
     name: "Business",
     price: "297€/mois",
+    basePrice: 297,
     features: ["Standard IA", "Relances automatiques", "CRM intelligent"],
   },
   {
     name: "Domination",
     price: "Sur mesure",
+    basePrice: null,
     features: ["Multi-sites", "Automatisations avancées", "IA personnalisée"],
   },
 ];
@@ -71,11 +75,18 @@ export default function Home() {
     email: "",
     sector: "",
     problem: "",
+    inboundHours: "",
+    outboundHours: "",
   });
 
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+
+  const inboundHours = Number(form.inboundHours) || 0;
+  const outboundHours = Number(form.outboundHours) || 0;
+  const totalCallHours = inboundHours + outboundHours;
+  const estimatedAiCost = totalCallHours * AI_HOURLY_RATE;
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -103,6 +114,10 @@ export default function Home() {
         email: form.email,
         sector: form.sector,
         problem: form.problem,
+        inbound_hours: inboundHours,
+        outbound_hours: outboundHours,
+        estimated_total_hours: totalCallHours,
+        estimated_ai_cost: estimatedAiCost,
         status: "new",
       },
     ]);
@@ -123,6 +138,8 @@ export default function Home() {
       email: "",
       sector: "",
       problem: "",
+      inboundHours: "",
+      outboundHours: "",
     });
   }
 
@@ -220,8 +237,10 @@ export default function Home() {
             </div>
 
             <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
-              <p className="text-3xl font-bold">0</p>
-              <p className="mt-2 text-sm text-white/50">lead oublié</p>
+              <p className="text-3xl font-bold">10€/h</p>
+              <p className="mt-2 text-sm text-white/50">
+                consommation IA refacturée
+              </p>
             </div>
           </div>
         </motion.div>
@@ -229,7 +248,7 @@ export default function Home() {
 
       <section id="demo" className="mx-auto max-w-7xl px-6 py-24">
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
-          {features.map((feature, i) => (
+          {features.map((feature) => (
             <motion.div
               key={feature.title}
               whileHover={{ y: -5 }}
@@ -399,39 +418,69 @@ export default function Home() {
         <div className="text-center">
           <h2 className="text-4xl font-bold">Installation en 72h</h2>
           <p className="mt-4 text-white/60">
-            Une solution simple pour arrêter de perdre des prospects.
+            Une offre simple, avec une consommation IA estimée selon votre
+            volume d’appels.
           </p>
         </div>
 
         <div className="mt-16 grid gap-8 md:grid-cols-3">
-          {plans.map((plan) => (
-            <div
-              key={plan.name}
-              className="rounded-3xl border border-white/10 bg-white/5 p-8"
-            >
-              <h3 className="text-2xl font-bold">{plan.name}</h3>
-              <p className="mt-4 text-4xl font-bold">{plan.price}</p>
+          {plans.map((plan) => {
+            const totalEstimated =
+              plan.basePrice !== null ? plan.basePrice + estimatedAiCost : null;
 
-              <ul className="mt-8 space-y-4">
-                {plan.features.map((feature) => (
-                  <li
-                    key={feature}
-                    className="flex items-center gap-3 text-white/70"
-                  >
-                    <Check size={18} />
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-
-              <a
-                href="#rdv"
-                className="mt-8 inline-block rounded-full bg-white px-6 py-3 font-semibold text-black"
+            return (
+              <div
+                key={plan.name}
+                className="rounded-3xl border border-white/10 bg-white/5 p-8"
               >
-                Tester Stecy
-              </a>
-            </div>
-          ))}
+                <h3 className="text-2xl font-bold">{plan.name}</h3>
+
+                <p className="mt-4 text-4xl font-bold">{plan.price}</p>
+
+                <div className="mt-5 rounded-2xl border border-white/10 bg-black p-4">
+                  <p className="text-sm text-white/50">
+                    Surcoût IA estimé
+                  </p>
+
+                  <p className="mt-2 text-2xl font-bold">
+                    + {estimatedAiCost}€/mois
+                  </p>
+
+                  <p className="mt-1 text-xs text-white/40">
+                    {totalCallHours}h estimées × {AI_HOURLY_RATE}€/h.
+                  </p>
+
+                  {totalEstimated !== null && (
+                    <p className="mt-3 text-sm text-white/70">
+                      Total estimé :{" "}
+                      <span className="font-semibold text-white">
+                        {totalEstimated}€/mois
+                      </span>
+                    </p>
+                  )}
+                </div>
+
+                <ul className="mt-8 space-y-4">
+                  {plan.features.map((feature) => (
+                    <li
+                      key={feature}
+                      className="flex items-center gap-3 text-white/70"
+                    >
+                      <Check size={18} />
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+
+                <a
+                  href="#rdv"
+                  className="mt-8 inline-block rounded-full bg-white px-6 py-3 font-semibold text-black"
+                >
+                  Tester Stecy
+                </a>
+              </div>
+            );
+          })}
         </div>
       </section>
 
@@ -442,13 +491,15 @@ export default function Home() {
           </h2>
 
           <p className="mx-auto mt-6 max-w-2xl text-center text-lg text-white/60">
-            Décrivez votre activité. Nous vous montrons concrètement comment
-            Stecy pourrait répondre, qualifier et relancer vos prospects à votre
-            place.
+            Décrivez votre activité et estimez votre volume d’appels. Nous vous
+            montrons concrètement comment Stecy pourrait répondre, qualifier et
+            relancer vos prospects à votre place.
           </p>
 
           <div className="mt-8 rounded-2xl border border-white/10 bg-black p-5 text-center">
-            <p className="text-sm text-white/50">Vous pouvez aussi appeler la démo vocale :</p>
+            <p className="text-sm text-white/50">
+              Vous pouvez aussi appeler la démo vocale :
+            </p>
             <a
               href={PHONE_LINK}
               className="mt-2 inline-block text-2xl font-bold text-white hover:underline"
@@ -496,6 +547,44 @@ export default function Home() {
               onChange={(e) => setForm({ ...form, sector: e.target.value })}
               className="rounded-xl border border-white/10 bg-black px-5 py-4 text-white outline-none"
             />
+
+            <div className="grid gap-4 md:grid-cols-2">
+              <input
+                type="number"
+                min="0"
+                step="0.5"
+                placeholder="Heures d’appels entrants / mois"
+                value={form.inboundHours}
+                onChange={(e) =>
+                  setForm({ ...form, inboundHours: e.target.value })
+                }
+                className="rounded-xl border border-white/10 bg-black px-5 py-4 text-white outline-none"
+              />
+
+              <input
+                type="number"
+                min="0"
+                step="0.5"
+                placeholder="Heures d’appels sortants / mois"
+                value={form.outboundHours}
+                onChange={(e) =>
+                  setForm({ ...form, outboundHours: e.target.value })
+                }
+                className="rounded-xl border border-white/10 bg-black px-5 py-4 text-white outline-none"
+              />
+            </div>
+
+            <div className="rounded-2xl border border-white/10 bg-black p-5 text-center">
+              <p className="text-sm text-white/50">
+                Estimation du surcoût IA refacturé
+              </p>
+              <p className="mt-2 text-3xl font-bold text-white">
+                {estimatedAiCost}€/mois
+              </p>
+              <p className="mt-2 text-sm text-white/40">
+                {totalCallHours}h estimées × {AI_HOURLY_RATE}€/h
+              </p>
+            </div>
 
             <textarea
               placeholder="Quel est votre principal problème aujourd’hui ?"
