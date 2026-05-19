@@ -12,6 +12,57 @@ import {
   Check,
 } from "lucide-react";
 
+const PHONE_DISPLAY = "01 85 52 00 84";
+const PHONE_LINK = "tel:+33185520084";
+
+const features = [
+  {
+    icon: PhoneCall,
+    title: "Réponse aux appels",
+    text: "Stecy accueille vos prospects même lorsque vous n’êtes pas disponible.",
+  },
+  {
+    icon: MessageSquare,
+    title: "Messages qualifiés",
+    text: "Elle récupère les informations utiles pour comprendre la demande.",
+  },
+  {
+    icon: Bot,
+    title: "Transcription intelligente",
+    text: "Les messages vocaux peuvent être transcrits et envoyés automatiquement.",
+  },
+  {
+    icon: Calendar,
+    title: "Prise de contact rapide",
+    text: "Vous recevez un lead clair pour rappeler au bon moment.",
+  },
+];
+
+const dashboardItems = [
+  { title: "Appels traités", value: "17" },
+  { title: "Prospects qualifiés", value: "9" },
+  { title: "Rendez-vous pris", value: "3" },
+  { title: "Devis relancés", value: "12" },
+];
+
+const plans = [
+  {
+    name: "Starter",
+    price: "97€/mois",
+    features: ["Démo vocale", "Capture prospects", "Notifications email"],
+  },
+  {
+    name: "Business",
+    price: "297€/mois",
+    features: ["Standard IA", "Relances automatiques", "CRM intelligent"],
+  },
+  {
+    name: "Domination",
+    price: "Sur mesure",
+    features: ["Multi-sites", "Automatisations avancées", "IA personnalisée"],
+  },
+];
+
 export default function Home() {
   const [form, setForm] = useState({
     name: "",
@@ -28,6 +79,7 @@ export default function Home() {
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+
     setLoading(true);
     setError("");
     setSuccess(false);
@@ -80,12 +132,21 @@ export default function Home() {
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
           <div className="text-xl font-bold tracking-tight">SIMPLE ACL</div>
 
-          <a
-            href="#rdv"
-            className="rounded-full bg-white px-5 py-2 text-sm font-semibold text-black transition hover:bg-white/80"
-          >
-            Tester Stecy
-          </a>
+          <div className="flex items-center gap-3">
+            <a
+              href={PHONE_LINK}
+              className="hidden text-sm text-white/60 transition hover:text-white md:block"
+            >
+              {PHONE_DISPLAY}
+            </a>
+
+            <a
+              href="#rdv"
+              className="rounded-full bg-white px-5 py-2 text-sm font-semibold text-black transition hover:bg-white/80"
+            >
+              Tester Stecy
+            </a>
+          </div>
         </div>
       </nav>
 
@@ -108,9 +169,8 @@ export default function Home() {
           </h1>
 
           <p className="mx-auto mt-8 max-w-3xl text-lg text-white/70 md:text-xl">
-            Stecy répond à vos appels, messages WhatsApp et demandes entrantes,
-            qualifie vos prospects et vous aide à les transformer en
-            rendez-vous.
+            Stecy accueille vos appels, qualifie vos prospects et transmet les
+            demandes importantes pour que vous repreniez la main au bon moment.
           </p>
 
           <div className="mt-10 flex justify-center">
@@ -123,12 +183,25 @@ export default function Home() {
             </a>
           </div>
 
+          <div className="mt-6 text-center">
+            <p className="text-sm text-white/50">
+              Démo vocale disponible maintenant
+            </p>
+
+            <a
+              href={PHONE_LINK}
+              className="mt-2 inline-block text-2xl font-bold text-white transition hover:underline"
+            >
+              Appelez Stecy : {PHONE_DISPLAY}
+            </a>
+          </div>
+
           <div className="mt-10 flex flex-col items-center justify-center gap-3 text-sm text-white/50 md:flex-row">
-            <span>✅ Installation rapide</span>
+            <span>✅ Démo vocale réelle</span>
             <span className="hidden md:block">•</span>
-            <span>✅ Démo personnalisée</span>
+            <span>✅ Message transcrit automatiquement</span>
             <span className="hidden md:block">•</span>
-            <span>✅ Aucune opportunité oubliée</span>
+            <span>✅ Lead reçu par email</span>
           </div>
 
           <div className="mx-auto mt-14 grid max-w-4xl grid-cols-1 gap-4 md:grid-cols-3">
@@ -156,30 +229,9 @@ export default function Home() {
 
       <section id="demo" className="mx-auto max-w-7xl px-6 py-24">
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
-          {[
-            {
-              icon: PhoneCall,
-              title: "Réponse aux appels",
-              text: "Stecy répond automatiquement à vos prospects entrants.",
-            },
-            {
-              icon: MessageSquare,
-              title: "WhatsApp IA",
-              text: "Qualification automatique des demandes clients.",
-            },
-            {
-              icon: Bot,
-              title: "Relances intelligentes",
-              text: "Ne laissez plus aucun devis sans suivi.",
-            },
-            {
-              icon: Calendar,
-              title: "Prise de rendez-vous",
-              text: "Stecy transforme les demandes en rendez-vous.",
-            },
-          ].map((feature, i) => (
+          {features.map((feature, i) => (
             <motion.div
-              key={i}
+              key={feature.title}
               whileHover={{ y: -5 }}
               className="rounded-3xl border border-white/10 bg-white/5 p-8"
             >
@@ -210,12 +262,7 @@ export default function Home() {
           </div>
 
           <div className="mt-10 grid gap-6 md:grid-cols-4">
-            {[
-              { title: "Appels traités", value: "17" },
-              { title: "Prospects qualifiés", value: "9" },
-              { title: "Rendez-vous pris", value: "3" },
-              { title: "Devis relancés", value: "12" },
-            ].map((item) => (
+            {dashboardItems.map((item) => (
               <div
                 key={item.title}
                 className="rounded-2xl border border-white/10 bg-black p-6"
@@ -334,8 +381,8 @@ export default function Home() {
           </h2>
 
           <p className="mx-auto mt-6 max-w-3xl text-lg text-white/60 md:text-xl">
-            Pendant que vous êtes occupé, Stecy répond aux prospects, qualifie
-            les demandes et transforme vos opportunités en rendez-vous.
+            Pendant que vous êtes occupé, Stecy accueille les prospects,
+            qualifie les demandes et vous transmet les opportunités importantes.
           </p>
 
           <a
@@ -357,33 +404,9 @@ export default function Home() {
         </div>
 
         <div className="mt-16 grid gap-8 md:grid-cols-3">
-          {[
-            {
-              name: "Starter",
-              price: "97€/mois",
-              features: ["WhatsApp IA", "Capture prospects", "Notifications"],
-            },
-            {
-              name: "Business",
-              price: "297€/mois",
-              features: [
-                "Standard IA",
-                "Relances automatiques",
-                "CRM intelligent",
-              ],
-            },
-            {
-              name: "Domination",
-              price: "Sur mesure",
-              features: [
-                "Multi-sites",
-                "Automatisations avancées",
-                "IA personnalisée",
-              ],
-            },
-          ].map((plan, i) => (
+          {plans.map((plan) => (
             <div
-              key={i}
+              key={plan.name}
               className="rounded-3xl border border-white/10 bg-white/5 p-8"
             >
               <h3 className="text-2xl font-bold">{plan.name}</h3>
@@ -423,6 +446,16 @@ export default function Home() {
             Stecy pourrait répondre, qualifier et relancer vos prospects à votre
             place.
           </p>
+
+          <div className="mt-8 rounded-2xl border border-white/10 bg-black p-5 text-center">
+            <p className="text-sm text-white/50">Vous pouvez aussi appeler la démo vocale :</p>
+            <a
+              href={PHONE_LINK}
+              className="mt-2 inline-block text-2xl font-bold text-white hover:underline"
+            >
+              {PHONE_DISPLAY}
+            </a>
+          </div>
 
           <form onSubmit={handleSubmit} className="mt-10 grid gap-4">
             <input
@@ -510,9 +543,9 @@ export default function Home() {
             </p>
 
             <p>
-              Téléphone :{" "}
-              <a href="tel:+33185520084" className="text-white hover:underline">
-                01 85 52 00 84
+              Démo vocale Stecy :{" "}
+              <a href={PHONE_LINK} className="text-white hover:underline">
+                {PHONE_DISPLAY}
               </a>
             </p>
 
