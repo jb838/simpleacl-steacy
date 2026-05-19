@@ -9,7 +9,6 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@cloudflare/next-on-pages": "^1.13.16",
     "@supabase/supabase-js": "^2.106.0",
     "framer-motion": "^12.39.0",
     "lucide-react": "^1.16.0",
