@@ -12,11 +12,6 @@ import {
   Check,
 } from "lucide-react";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
-
 export default function Home() {
   const [form, setForm] = useState({
     name: "",
@@ -36,6 +31,17 @@ export default function Home() {
     setLoading(true);
     setError("");
     setSuccess(false);
+
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+    if (!supabaseUrl || !supabaseAnonKey) {
+      setLoading(false);
+      setError("Configuration Supabase manquante.");
+      return;
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
     const { error } = await supabase.from("leads").insert([
       {
@@ -78,48 +84,72 @@ export default function Home() {
             href="#rdv"
             className="rounded-full bg-white px-5 py-2 text-sm font-semibold text-black transition hover:bg-white/80"
           >
-            Audit gratuit
+            Tester Stecy
           </a>
         </div>
       </nav>
 
       <section className="relative flex min-h-screen items-center justify-center overflow-hidden px-6 pt-32 text-center">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.12),transparent_40%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.14),transparent_42%)]" />
 
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="relative z-10 mx-auto max-w-5xl"
+          className="relative z-10 mx-auto max-w-6xl"
         >
           <div className="mb-6 inline-flex rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/70">
-            STECY • Réceptionniste IA 24h/24
+            STECY • L’assistante IA qui répond quand vous ne pouvez pas
           </div>
 
           <h1 className="text-5xl font-bold leading-tight tracking-tight md:text-7xl">
-            Vous perdez des clients chaque jour sans le savoir.
+            Ne perdez plus jamais un client parce que vous n’avez pas répondu à
+            temps.
           </h1>
 
-          <p className="mx-auto mt-8 max-w-2xl text-lg text-white/70 md:text-xl">
-            Stecy répond automatiquement à vos appels, WhatsApp et prospects
-            entrants afin d’éviter les pertes de chiffre d’affaires.
+          <p className="mx-auto mt-8 max-w-3xl text-lg text-white/70 md:text-xl">
+            Stecy répond à vos appels, messages WhatsApp et demandes entrantes,
+            qualifie vos prospects et vous aide à les transformer en
+            rendez-vous.
           </p>
 
-          <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+          <div className="mt-10 flex justify-center">
             <a
               href="#rdv"
-              className="flex items-center gap-2 rounded-full bg-white px-8 py-4 font-semibold text-black transition hover:bg-white/80"
+              className="flex items-center gap-2 rounded-full bg-white px-9 py-5 text-lg font-semibold text-black transition hover:bg-white/80"
             >
-              Recevoir mon audit gratuit
-              <ArrowRight size={18} />
+              Tester Stecy gratuitement
+              <ArrowRight size={20} />
             </a>
+          </div>
 
-            <a
-              href="#demo"
-              className="rounded-full border border-white/10 px-8 py-4 font-semibold text-white transition hover:bg-white/10"
-            >
-              Voir la démo
-            </a>
+          <div className="mt-10 flex flex-col items-center justify-center gap-3 text-sm text-white/50 md:flex-row">
+            <span>✅ Installation rapide</span>
+            <span className="hidden md:block">•</span>
+            <span>✅ Démo personnalisée</span>
+            <span className="hidden md:block">•</span>
+            <span>✅ Aucune opportunité oubliée</span>
+          </div>
+
+          <div className="mx-auto mt-14 grid max-w-4xl grid-cols-1 gap-4 md:grid-cols-3">
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
+              <p className="text-3xl font-bold">24h/24</p>
+              <p className="mt-2 text-sm text-white/50">
+                réponse aux prospects
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
+              <p className="text-3xl font-bold">72h</p>
+              <p className="mt-2 text-sm text-white/50">
+                installation possible
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
+              <p className="text-3xl font-bold">0</p>
+              <p className="mt-2 text-sm text-white/50">lead oublié</p>
+            </div>
           </div>
         </motion.div>
       </section>
@@ -198,36 +228,76 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-4xl px-6 py-24">
-        <div className="rounded-3xl border border-white/10 bg-[#0f0f0f] p-8">
-          <p className="mb-8 text-center text-sm uppercase tracking-[0.3em] text-white/40">
-            Démonstration Stecy
-          </p>
+      <section className="mx-auto max-w-7xl px-6 py-24">
+        <div className="grid gap-8 lg:grid-cols-2">
+          <div className="rounded-3xl border border-white/10 bg-[#0f0f0f] p-8">
+            <p className="mb-8 text-sm uppercase tracking-[0.3em] text-white/40">
+              Démo conversation
+            </p>
 
-          <div className="space-y-4">
-            <div className="max-w-sm rounded-2xl bg-white/10 p-4 text-white">
-              Bonjour, je souhaite un devis pour une climatisation.
+            <div className="space-y-4">
+              <div className="max-w-sm rounded-2xl bg-white/10 p-4 text-white">
+                Bonjour, je souhaite un devis pour une climatisation.
+              </div>
+
+              <div className="ml-auto max-w-sm whitespace-pre-line rounded-2xl bg-green-500 p-4 text-black">
+                Bonjour 👋{"\n\n"}Je vais vous aider. Dans quelle ville
+                êtes-vous situé ?
+              </div>
+
+              <div className="max-w-sm rounded-2xl bg-white/10 p-4 text-white">
+                Cergy. C’est pour une maison.
+              </div>
+
+              <div className="ml-auto max-w-sm whitespace-pre-line rounded-2xl bg-green-500 p-4 text-black">
+                Très bien.{"\n\n"}Votre demande est prioritaire. Un conseiller
+                peut vous rappeler aujourd’hui.
+              </div>
+
+              <div className="max-w-sm rounded-2xl bg-white/10 p-4 text-white">
+                Oui, idéalement cet après-midi.
+              </div>
+
+              <div className="ml-auto max-w-sm whitespace-pre-line rounded-2xl bg-green-500 p-4 text-black">
+                Parfait.{"\n\n"}Votre demande est enregistrée. L’équipe reçoit
+                votre fiche prospect maintenant.
+              </div>
             </div>
+          </div>
 
-            <div className="ml-auto max-w-sm whitespace-pre-line rounded-2xl bg-green-500 p-4 text-black">
-              Bonjour 👋{"\n\n"}Je vais vous aider.{"\n\n"}Dans quelle ville
-              êtes-vous situé ?
-            </div>
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-8">
+            <p className="mb-8 text-sm uppercase tracking-[0.3em] text-white/40">
+              Fiche prospect générée
+            </p>
 
-            <div className="max-w-sm rounded-2xl bg-white/10 p-4 text-white">
-              Cergy.
-            </div>
+            <div className="space-y-4">
+              <div className="rounded-2xl border border-white/10 bg-black p-5">
+                <p className="text-sm text-white/40">Statut</p>
+                <p className="mt-2 text-2xl font-bold text-green-400">
+                  Prospect chaud
+                </p>
+              </div>
 
-            <div className="ml-auto max-w-sm whitespace-pre-line rounded-2xl bg-green-500 p-4 text-black">
-              Parfait.{"\n\n"}Quel type de logement est concerné ?
-            </div>
+              <div className="rounded-2xl border border-white/10 bg-black p-5">
+                <p className="text-sm text-white/40">Besoin détecté</p>
+                <p className="mt-2 text-white/80">
+                  Devis climatisation pour maison à Cergy
+                </p>
+              </div>
 
-            <div className="max-w-sm rounded-2xl bg-white/10 p-4 text-white">
-              Une maison.
-            </div>
+              <div className="rounded-2xl border border-white/10 bg-black p-5">
+                <p className="text-sm text-white/40">Action recommandée</p>
+                <p className="mt-2 text-white/80">
+                  Rappel aujourd’hui + proposition de rendez-vous
+                </p>
+              </div>
 
-            <div className="ml-auto max-w-sm whitespace-pre-line rounded-2xl bg-green-500 p-4 text-black">
-              Merci.{"\n\n"}Un technicien peut vous rappeler aujourd’hui.
+              <div className="rounded-2xl border border-white/10 bg-black p-5">
+                <p className="text-sm text-white/40">Résultat</p>
+                <p className="mt-2 text-white/80">
+                  Lead qualifié, résumé envoyé, relance prête.
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -267,6 +337,14 @@ export default function Home() {
             Pendant que vous êtes occupé, Stecy répond aux prospects, qualifie
             les demandes et transforme vos opportunités en rendez-vous.
           </p>
+
+          <a
+            href="#rdv"
+            className="mt-10 inline-flex items-center gap-2 rounded-full bg-white px-8 py-4 font-semibold text-black transition hover:bg-white/80"
+          >
+            Tester Stecy gratuitement
+            <ArrowRight size={18} />
+          </a>
         </div>
       </section>
 
@@ -327,7 +405,7 @@ export default function Home() {
                 href="#rdv"
                 className="mt-8 inline-block rounded-full bg-white px-6 py-3 font-semibold text-black"
               >
-                Commencer
+                Tester Stecy
               </a>
             </div>
           ))}
@@ -337,12 +415,13 @@ export default function Home() {
       <section id="rdv" className="mx-auto max-w-4xl px-6 py-32">
         <div className="rounded-3xl border border-white/10 bg-white/5 p-8 md:p-12">
           <h2 className="text-center text-4xl font-bold md:text-5xl">
-            Recevez votre audit anti-perte de clients
+            Testez Stecy sur votre entreprise
           </h2>
 
           <p className="mx-auto mt-6 max-w-2xl text-center text-lg text-white/60">
-            Remplissez ce formulaire. Nous analysons vos points de perte :
-            appels, WhatsApp, relances, devis et prospects oubliés.
+            Décrivez votre activité. Nous vous montrons concrètement comment
+            Stecy pourrait répondre, qualifier et relancer vos prospects à votre
+            place.
           </p>
 
           <form onSubmit={handleSubmit} className="mt-10 grid gap-4">
@@ -396,7 +475,7 @@ export default function Home() {
               disabled={loading}
               className="mt-4 rounded-full bg-white px-8 py-4 font-semibold text-black transition hover:bg-white/80 disabled:opacity-50"
             >
-              {loading ? "Envoi en cours..." : "Recevoir mon audit gratuit"}
+              {loading ? "Envoi en cours..." : "Tester Stecy gratuitement"}
             </button>
 
             {success && (
@@ -409,39 +488,40 @@ export default function Home() {
           </form>
         </div>
       </section>
+
       <footer className="border-t border-white/10 px-6 py-10">
-  <div className="mx-auto flex max-w-7xl flex-col gap-6 text-sm text-white/50 md:flex-row md:items-center md:justify-between">
-    <div>
-      <p className="font-semibold text-white">SIMPLE ACL</p>
-      <p className="mt-2">
-        Stecy, réceptionniste IA 24h/24 pour ne plus perdre de clients.
-      </p>
-    </div>
+        <div className="mx-auto flex max-w-7xl flex-col gap-6 text-sm text-white/50 md:flex-row md:items-center md:justify-between">
+          <div>
+            <p className="font-semibold text-white">SIMPLE ACL</p>
+            <p className="mt-2">
+              Stecy, réceptionniste IA 24h/24 pour ne plus perdre de clients.
+            </p>
+          </div>
 
-    <div className="space-y-2 md:text-right">
-      <p>
-        Email :{" "}
-        <a
-          href="mailto:contact@simpleacl.com"
-          className="text-white hover:underline"
-        >
-          contact@simpleacl.com
-        </a>
-      </p>
+          <div className="space-y-2 md:text-right">
+            <p>
+              Email :{" "}
+              <a
+                href="mailto:contact@simpleacl.com"
+                className="text-white hover:underline"
+              >
+                contact@simpleacl.com
+              </a>
+            </p>
 
-      <p>
-        Téléphone :{" "}
-        <a href="tel:+33185520084" className="text-white hover:underline">
-          01 85 52 00 84
-        </a>
-      </p>
+            <p>
+              Téléphone :{" "}
+              <a href="tel:+33185520084" className="text-white hover:underline">
+                01 85 52 00 84
+              </a>
+            </p>
 
-      <p className="text-white/40">
-        © 2026 SIMPLE ACL. Tous droits réservés.
-      </p>
-    </div>
-  </div>
-</footer>
+            <p className="text-white/40">
+              © 2026 SIMPLE ACL. Tous droits réservés.
+            </p>
+          </div>
+        </div>
+      </footer>
     </main>
   );
 }
